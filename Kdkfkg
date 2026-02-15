@@ -1,0 +1,127 @@
+-- Shadow Hub - Script simple para Roblox (Lua)
+-- Creado por Grok. Este script crea un GUI básico para ajustar la velocidad del personaje.
+-- Requiere un exploit que permita inyectar scripts (como Synapse X, Krnl, etc.).
+-- Nota: Usa elementos GUI básicos de Roblox. Si querés algo más fancy, decime y lo mejoro con una lib como Kavo o Fluent.
+
+local player = game.Players.LocalPlayer
+local speed = 16  -- Velocidad inicial (default de Roblox)
+local enabled = false  -- Estado inicial: desactivado
+
+-- Crear el GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ShadowHub"
+ScreenGui.Parent = game.CoreGui  -- Para que sea visible en exploits
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 300, 0, 100)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -50)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)  -- Fondo oscuro
+Frame.BorderSizePixel = 0
+Frame.Parent = ScreenGui
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0.3, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "Shadow Hub - Ajuste de Velocidad"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
+Title.Font = Enum.Font.SourceSansBold
+Title.Parent = Frame
+
+-- Botón -
+local MinusButton = Instance.new("TextButton")
+MinusButton.Size = UDim2.new(0.3, 0, 0.5, 0)
+MinusButton.Position = UDim2.new(0, 0, 0.4, 0)
+MinusButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+MinusButton.Text = "-"
+MinusButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MinusButton.TextSize = 24
+MinusButton.Parent = Frame
+
+-- Botón Toggle (medio)
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0.4, 0, 0.5, 0)
+ToggleButton.Position = UDim2.new(0.3, 0, 0.4, 0)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButton.Text = "OFF"  -- Inicialmente OFF
+ToggleButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+ToggleButton.TextSize = 18
+ToggleButton.Parent = Frame
+
+-- Botón +
+local PlusButton = Instance.new("TextButton")
+PlusButton.Size = UDim2.new(0.3, 0, 0.5, 0)
+PlusButton.Position = UDim2.new(0.7, 0, 0.4, 0)
+PlusButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+PlusButton.Text = "+"
+PlusButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+PlusButton.TextSize = 24
+PlusButton.Parent = Frame
+
+-- Label para mostrar la velocidad actual
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(1, 0, 0.2, 0)
+SpeedLabel.Position = UDim2.new(0, 0, 0.8, 0)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "Velocidad: " .. speed
+SpeedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+SpeedLabel.TextSize = 14
+SpeedLabel.Parent = Frame
+
+-- Función para actualizar la velocidad
+local function updateSpeed()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = speed
+    end
+end
+
+-- Evento para botón -
+MinusButton.MouseButton1Click:Connect(function()
+    if speed > 1 then  -- Límite mínimo para no ir a 0 o negativo
+        speed = speed - 1  -- Ajustá el paso si querés (ej: -5)
+        SpeedLabel.Text = "Velocidad: " .. speed
+        if enabled then
+            updateSpeed()
+        end
+    end
+end)
+
+-- Evento para botón +
+PlusButton.MouseButton1Click:Connect(function()
+    speed = speed + 1  -- Ajustá el paso si querés (ej: +5)
+    SpeedLabel.Text = "Velocidad: " .. speed
+    if enabled then
+        updateSpeed()
+    end
+end)
+
+-- Evento para botón Toggle
+ToggleButton.MouseButton1Click:Connect(function()
+    enabled = not enabled
+    if enabled then
+        ToggleButton.Text = "ON"
+        ToggleButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+        updateSpeed()
+    else
+        ToggleButton.Text = "OFF"
+        ToggleButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.WalkSpeed = 16  -- Reset a default
+        end
+    end
+end)
+
+-- Manejar respawn del personaje (para que el speed se aplique de nuevo)
+player.CharacterAdded:Connect(function(char)
+    char:WaitForChild("Humanoid")
+    if enabled then
+        updateSpeed()
+    end
+end)
+
+-- Inicializar si ya hay personaje
+if player.Character then
+    player.Character:WaitForChild("Humanoid")
+end
+
+print("Shadow Hub cargado! Busca el GUI en tu pantalla.")
