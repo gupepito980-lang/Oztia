@@ -1,0 +1,122 @@
+-- 🌑 SHADOW Hub OP para Delta Executor - Brookhaven RP 2026 | by Pepito
+-- Usa Kavo UI: estable en Delta mobile
+
+local Kavo = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+
+local Window = Kavo:CreateLib("SHADOW Hub OP", "DarkTheme")  -- Fondo negro
+
+-- Tab Movement
+local MovementTab = Window:NewTab("Movement")
+local MovementSection = MovementTab:NewSection("Movimiento OP 🔥")
+
+MovementTab:NewToggle("Fly (Mobile)", "Vuela con touch/joystick", function(state)
+    if state then
+        -- Fly simple para mobile (usa joystick o keys)
+        local InfiniteYieldFly = loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+        InfiniteYieldFly()  -- ;fly para activar (o usa toggle)
+        game:GetService("StarterGui"):SetCore("SendNotification", {Title="SHADOW", Text="Fly ON! Usa ;fly o joystick", Duration=5})
+    else
+        -- Off fly (usa ;unfly si cargas Infinite Yield)
+        game:GetService("StarterGui"):SetCore("SendNotification", {Title="SHADOW", Text="Fly OFF", Duration=3})
+    end
+end)
+
+MovementTab:NewToggle("Noclip", "Atraviesa paredes", function(state)
+    getgenv().Noclip = state
+    if state then
+        game:GetService("RunService").Stepped:Connect(function()
+            if getgenv().Noclip and game.Players.LocalPlayer.Character then
+                for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
+                end
+            end
+        end)
+    end
+end)
+
+MovementTab:NewSlider("Walk Speed", "Velocidad max 500", 500, 16, function(value)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+end)
+
+MovementTab:NewSlider("Jump Power", "Salto max 500", 500, 50, function(value)
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
+end)
+
+MovementTab:NewButton("Car Fly (Mobile)", "Vuela en auto", function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/58jNvV3h"))()  -- Car fly clásico
+    game:GetService("StarterGui"):SetCore("SendNotification", {Title="SHADOW", Text="Car Fly Loaded! Entra a un auto", Duration=5})
+end)
+
+-- Tab Visuals
+local VisualsTab = Window:NewTab("Visuals")
+VisualsTab:NewSection("Visuales OP")
+
+VisualsTab:NewToggle("ESP Players (Rojo)", "Ve a través de paredes", function(state)
+    if state then
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player \~= game.Players.LocalPlayer and player.Character then
+                local esp = Instance.new("Highlight", player.Character)
+                esp.FillColor = Color3.fromRGB(255, 0, 0)
+                esp.OutlineColor = Color3.fromRGB(255, 255, 0)
+            end
+        end
+    else
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player.Character then
+                for _, highlight in pairs(player.Character:GetChildren()) do
+                    if highlight:IsA("Highlight") then highlight:Destroy() end
+                end
+            end
+        end
+    end
+end)
+
+VisualsTab:NewToggle("Fullbright", "Todo iluminado", function(state)
+    if state then
+        game.Lighting.Brightness = 3
+        game.Lighting.GlobalShadows = false
+    else
+        game.Lighting.Brightness = 1
+        game.Lighting.GlobalShadows = true
+    end
+end)
+
+-- Tab Player
+local PlayerTab = Window:NewTab("Player")
+PlayerTab:NewSection("Mods Personaje")
+
+PlayerTab:NewToggle("Godmode", "Vida infinita", function(state)
+    local hum = game.Players.LocalPlayer.Character.Humanoid
+    if state then
+        hum.MaxHealth = math.huge
+        hum.Health = math.huge
+    else
+        hum.MaxHealth = 100
+        hum.Health = 100
+    end
+end)
+
+PlayerTab:NewButton("Infinite Money (Visual)", function()
+    local ls = game.Players.LocalPlayer.leaderstats
+    if ls and ls.Cash then ls.Cash.Value = 999999999 end
+end)
+
+-- Tab Extras (más OP)
+local ExtrasTab = Window:NewTab("Extras")
+ExtrasTab:NewButton("Load Infinite Yield (Admin OP)", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    game:GetService("StarterGui"):SetCore("SendNotification", {Title="SHADOW", Text="Infinite Yield Loaded! Usa ;fly ;noclip ;fling etc.", Duration=6})
+end)
+
+ExtrasTab:NewButton("Load SP Hub (Unlocks Brookhaven)", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/as6cd0/SP_Hub/refs/heads/main/Brookhaven"))()
+end)
+
+-- Noti inicial
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🌑 SHADOW OP Cargado!",
+    Text = "Kavo UI en Delta - Abre el menú (toca la flecha o usa keybind si seteas)",
+    Duration = 8
+})
+
+print("SHADOW Hub OP - Kavo UI - Cargado en Delta!")
